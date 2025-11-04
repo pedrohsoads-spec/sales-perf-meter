@@ -1,9 +1,7 @@
 import { Calculator } from "@/components/Calculator";
 import { Calculator as CalculatorIcon, TrendingUp, DollarSign } from "lucide-react";
-
 const Index = () => {
-  return (
-    <div className="min-h-screen bg-[var(--gradient-hero)]">
+  return <div className="min-h-screen bg-[var(--gradient-hero)]">
       {/* Hero Section */}
       <header className="container mx-auto px-4 py-12 md:py-20">
         <div className="text-center space-y-6 max-w-3xl mx-auto">
@@ -48,12 +46,8 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="container mx-auto px-4 py-8 text-center border-t border-border">
-        <p className="text-sm text-muted-foreground">
-          © 2024 Calculadora de Performance. Otimize seus resultados de vendas.
-        </p>
+        <p className="text-sm text-muted-foreground">© EVO Soluções Digais 2024 Calculadora de Performance. Otimize seus resultados de vendas.</p>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
