@@ -4,7 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface CalculatorValues {
-  adInvestment: number;
+  totalAdInvestment: number;
+  numberOfSellers: number;
+  adInvestmentPerSeller: number;
   cpl: number;
   conversionRate: number;
   courseValue: number;
@@ -16,7 +18,9 @@ interface CalculatorValues {
 
 export const Calculator = () => {
   const [values, setValues] = useState<CalculatorValues>({
-    adInvestment: 0,
+    totalAdInvestment: 0,
+    numberOfSellers: 0,
+    adInvestmentPerSeller: 0,
     cpl: 0,
     conversionRate: 0,
     courseValue: 0,
@@ -41,21 +45,30 @@ export const Calculator = () => {
   });
 
   useEffect(() => {
+    // Calcular investimento por vendedor
+    const adInvestmentPerSeller = values.numberOfSellers > 0 
+      ? values.totalAdInvestment / values.numberOfSellers 
+      : 0;
+    
+    setValues(prev => ({ ...prev, adInvestmentPerSeller }));
+  }, [values.totalAdInvestment, values.numberOfSellers]);
+
+  useEffect(() => {
     // Projeção de faturamento
-    const leads = values.cpl > 0 ? values.adInvestment / values.cpl : 0;
+    const leads = values.cpl > 0 ? values.adInvestmentPerSeller / values.cpl : 0;
     const salesCPF = leads * (values.conversionRate / 100);
     const coursesSold = salesCPF * values.coursesPerCPF;
     const revenue = values.courseValue * coursesSold;
-    const roas = values.adInvestment > 0 ? (revenue / values.adInvestment) * 100 : 0;
+    const roas = values.adInvestmentPerSeller > 0 ? (revenue / values.adInvestmentPerSeller) * 100 : 0;
 
     // Custos
     const commission = revenue * (values.commissionRate / 100);
     const operatingCost = commission + values.salary + values.otherCosts;
-    const totalCost = values.adInvestment + operatingCost;
+    const totalCost = values.adInvestmentPerSeller + operatingCost;
 
     // Resultados finais
     const grossProfit = revenue - totalCost;
-    const marketingCostPercent = totalCost > 0 ? (values.adInvestment / totalCost) * 100 : 0;
+    const marketingCostPercent = totalCost > 0 ? (values.adInvestmentPerSeller / totalCost) * 100 : 0;
     const salesCostPercent = totalCost > 0 ? ((values.salary + commission + values.otherCosts) / totalCost) * 100 : 0;
 
     setResults({
@@ -90,6 +103,33 @@ export const Calculator = () => {
     return `${formatNumber(value)}%`;
   };
 
+  const formatCurrencyInput = (value: string): string => {
+    // Remove tudo exceto números
+    const numbers = value.replace(/\D/g, '');
+    
+    if (!numbers) return '';
+    
+    // Converte para número e divide por 100 para ter centavos
+    const numberValue = parseInt(numbers) / 100;
+    
+    // Formata como moeda brasileira
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(numberValue);
+  };
+
+  const parseCurrencyInput = (value: string): number => {
+    // Remove formatação e converte para número
+    const numbers = value.replace(/\D/g, '');
+    return numbers ? parseInt(numbers) / 100 : 0;
+  };
+
+  const handleCurrencyInputChange = (field: keyof CalculatorValues, value: string) => {
+    const numValue = parseCurrencyInput(value);
+    setValues((prev) => ({ ...prev, [field]: numValue }));
+  };
+
   const handleInputChange = (field: keyof CalculatorValues, value: string) => {
     const numValue = parseFloat(value) || 0;
     setValues((prev) => ({ ...prev, [field]: numValue }));
@@ -105,24 +145,47 @@ export const Calculator = () => {
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="adInvestment">Investimento em Anúncios</Label>
+              <Label htmlFor="totalAdInvestment">Investimento em Anúncios</Label>
               <Input
-                id="adInvestment"
-                type="number"
+                id="totalAdInvestment"
+                type="text"
                 placeholder="R$ 0,00"
-                value={values.adInvestment || ""}
-                onChange={(e) => handleInputChange("adInvestment", e.target.value)}
+                value={values.totalAdInvestment ? formatCurrencyInput(String(values.totalAdInvestment * 100)) : ""}
+                onChange={(e) => handleCurrencyInputChange("totalAdInvestment", e.target.value)}
                 className="border-input"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="numberOfSellers">Número de Vendedores</Label>
+              <Input
+                id="numberOfSellers"
+                type="number"
+                placeholder="0"
+                value={values.numberOfSellers || ""}
+                onChange={(e) => handleInputChange("numberOfSellers", e.target.value)}
+                className="border-input"
+              />
+            </div>
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="adInvestmentPerSeller" className="text-primary font-semibold">
+                Investimento em Anúncios por Vendedor
+              </Label>
+              <Input
+                id="adInvestmentPerSeller"
+                type="text"
+                value={formatCurrency(values.adInvestmentPerSeller)}
+                disabled
+                className="border-input bg-secondary/50 font-semibold text-lg"
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="cpl">CPL (Custo por Lead)</Label>
               <Input
                 id="cpl"
-                type="number"
+                type="text"
                 placeholder="R$ 0,00"
-                value={values.cpl || ""}
-                onChange={(e) => handleInputChange("cpl", e.target.value)}
+                value={values.cpl ? formatCurrencyInput(String(values.cpl * 100)) : ""}
+                onChange={(e) => handleCurrencyInputChange("cpl", e.target.value)}
                 className="border-input"
               />
             </div>
@@ -141,10 +204,10 @@ export const Calculator = () => {
               <Label htmlFor="courseValue">Valor do Curso</Label>
               <Input
                 id="courseValue"
-                type="number"
+                type="text"
                 placeholder="R$ 0,00"
-                value={values.courseValue || ""}
-                onChange={(e) => handleInputChange("courseValue", e.target.value)}
+                value={values.courseValue ? formatCurrencyInput(String(values.courseValue * 100)) : ""}
+                onChange={(e) => handleCurrencyInputChange("courseValue", e.target.value)}
                 className="border-input"
               />
             </div>
@@ -208,10 +271,10 @@ export const Calculator = () => {
               <Label htmlFor="salary">Salário</Label>
               <Input
                 id="salary"
-                type="number"
+                type="text"
                 placeholder="R$ 0,00"
-                value={values.salary || ""}
-                onChange={(e) => handleInputChange("salary", e.target.value)}
+                value={values.salary ? formatCurrencyInput(String(values.salary * 100)) : ""}
+                onChange={(e) => handleCurrencyInputChange("salary", e.target.value)}
                 className="border-input"
               />
             </div>
@@ -219,10 +282,10 @@ export const Calculator = () => {
               <Label htmlFor="otherCosts">Outros Custos e Encargos</Label>
               <Input
                 id="otherCosts"
-                type="number"
+                type="text"
                 placeholder="R$ 0,00"
-                value={values.otherCosts || ""}
-                onChange={(e) => handleInputChange("otherCosts", e.target.value)}
+                value={values.otherCosts ? formatCurrencyInput(String(values.otherCosts * 100)) : ""}
+                onChange={(e) => handleCurrencyInputChange("otherCosts", e.target.value)}
                 className="border-input"
               />
             </div>
@@ -230,8 +293,8 @@ export const Calculator = () => {
 
           <div className="pt-4 border-t border-border space-y-3">
             <div className="flex justify-between items-center">
-              <span className="font-medium text-muted-foreground">Investimento em Anúncios</span>
-              <span className="text-lg font-semibold text-foreground">{formatCurrency(values.adInvestment)}</span>
+              <span className="font-medium text-muted-foreground">Investimento em Anúncios (por vendedor)</span>
+              <span className="text-lg font-semibold text-foreground">{formatCurrency(values.adInvestmentPerSeller)}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="font-medium text-muted-foreground">Comissão</span>
