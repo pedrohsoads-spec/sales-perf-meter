@@ -109,8 +109,8 @@ export const Calculator = () => {
     
     if (!numbers) return '';
     
-    // Converte para número e divide por 100 para ter centavos
-    const numberValue = parseInt(numbers) / 100;
+    // Converte para número
+    const numberValue = parseInt(numbers);
     
     // Formata como moeda brasileira
     return new Intl.NumberFormat('pt-BR', {
@@ -122,7 +122,7 @@ export const Calculator = () => {
   const parseCurrencyInput = (value: string): number => {
     // Remove formatação e converte para número
     const numbers = value.replace(/\D/g, '');
-    return numbers ? parseInt(numbers) / 100 : 0;
+    return numbers ? parseInt(numbers) : 0;
   };
 
   const handleCurrencyInputChange = (field: keyof CalculatorValues, value: string) => {
@@ -150,7 +150,7 @@ export const Calculator = () => {
                 id="totalAdInvestment"
                 type="text"
                 placeholder="R$ 0,00"
-                value={values.totalAdInvestment ? formatCurrencyInput(String(values.totalAdInvestment * 100)) : ""}
+                value={values.totalAdInvestment ? formatCurrencyInput(String(values.totalAdInvestment)) : ""}
                 onChange={(e) => handleCurrencyInputChange("totalAdInvestment", e.target.value)}
                 className="border-input"
               />
@@ -184,7 +184,7 @@ export const Calculator = () => {
                 id="cpl"
                 type="text"
                 placeholder="R$ 0,00"
-                value={values.cpl ? formatCurrencyInput(String(values.cpl * 100)) : ""}
+                value={values.cpl ? formatCurrencyInput(String(values.cpl)) : ""}
                 onChange={(e) => handleCurrencyInputChange("cpl", e.target.value)}
                 className="border-input"
               />
@@ -206,7 +206,7 @@ export const Calculator = () => {
                 id="courseValue"
                 type="text"
                 placeholder="R$ 0,00"
-                value={values.courseValue ? formatCurrencyInput(String(values.courseValue * 100)) : ""}
+                value={values.courseValue ? formatCurrencyInput(String(values.courseValue)) : ""}
                 onChange={(e) => handleCurrencyInputChange("courseValue", e.target.value)}
                 className="border-input"
               />
@@ -273,7 +273,7 @@ export const Calculator = () => {
                 id="salary"
                 type="text"
                 placeholder="R$ 0,00"
-                value={values.salary ? formatCurrencyInput(String(values.salary * 100)) : ""}
+                value={values.salary ? formatCurrencyInput(String(values.salary)) : ""}
                 onChange={(e) => handleCurrencyInputChange("salary", e.target.value)}
                 className="border-input"
               />
@@ -284,7 +284,7 @@ export const Calculator = () => {
                 id="otherCosts"
                 type="text"
                 placeholder="R$ 0,00"
-                value={values.otherCosts ? formatCurrencyInput(String(values.otherCosts * 100)) : ""}
+                value={values.otherCosts ? formatCurrencyInput(String(values.otherCosts)) : ""}
                 onChange={(e) => handleCurrencyInputChange("otherCosts", e.target.value)}
                 className="border-input"
               />
