@@ -46,7 +46,7 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="container mx-auto px-4 py-8 text-center border-t border-border">
-        <p className="text-sm text-muted-foreground">© EVO Soluções Digais 2024 Calculadora de Performance. Otimize seus resultados de vendas.</p>
+        <p className="text-sm text-muted-foreground">© EVO Marketing & Tecnologia 2024 Calculadora de Performance. Otimize seus resultados de vendas.</p>
       </footer>
     </div>;
 };
