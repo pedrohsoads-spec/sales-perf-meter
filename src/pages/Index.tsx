@@ -1,13 +1,38 @@
 import { Calculator } from "@/components/Calculator";
-import { TrendingUp, DollarSign } from "lucide-react";
+import { AuthDialog } from "@/components/AuthDialog";
+import { TrendingUp, DollarSign, LogIn } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { User } from "@supabase/supabase-js";
 import evoLogo from "@/assets/evo-logo.png";
+
 const Index = () => {
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
+
   return <div className="min-h-screen bg-[var(--gradient-hero)]">
       {/* Hero Section */}
       <header className="container mx-auto px-4 py-12 md:py-20">
         <div className="text-center space-y-6 max-w-3xl mx-auto">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl mb-4">
-            <img src={evoLogo} alt="EVO Marketing & Tecnologia" className="w-full h-full object-contain" />
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full overflow-hidden mb-4 bg-background/10 backdrop-blur-sm">
+            <img src={evoLogo} alt="EVO Marketing & Tecnologia" className="w-full h-full object-cover" />
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
             Calculadora de Performance
@@ -37,6 +62,19 @@ const Index = () => {
               </div>
             </div>
           </div>
+
+          <div className="pt-6">
+            {user ? (
+              <Button onClick={handleLogout} variant="outline" size="lg">
+                Sair
+              </Button>
+            ) : (
+              <Button onClick={() => setAuthDialogOpen(true)} size="lg">
+                <LogIn className="w-5 h-5 mr-2" />
+                Entrar
+              </Button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -44,6 +82,8 @@ const Index = () => {
       <main className="container mx-auto px-4 pb-20">
         <Calculator />
       </main>
+
+      <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
       {/* Footer */}
       <footer className="container mx-auto px-4 py-8 text-center border-t border-border">
