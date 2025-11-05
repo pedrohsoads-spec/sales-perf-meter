@@ -6,7 +6,7 @@ const Index = () => {
       <header className="container mx-auto px-4 py-12 md:py-20">
         <div className="text-center space-y-6 max-w-3xl mx-auto">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-2xl shadow-[var(--shadow-glow)] mb-4">
-            <CalculatorIcon className="w-10 h-10 text-primary" />
+            <span className="text-3xl font-bold text-primary">EVO</span>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
             Calculadora de Performance
