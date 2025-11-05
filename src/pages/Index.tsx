@@ -1,12 +1,13 @@
 import { Calculator } from "@/components/Calculator";
-import { Calculator as CalculatorIcon, TrendingUp, DollarSign } from "lucide-react";
+import { TrendingUp, DollarSign } from "lucide-react";
+import evoLogo from "@/assets/evo-logo.png";
 const Index = () => {
   return <div className="min-h-screen bg-[var(--gradient-hero)]">
       {/* Hero Section */}
       <header className="container mx-auto px-4 py-12 md:py-20">
         <div className="text-center space-y-6 max-w-3xl mx-auto">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-2xl shadow-[var(--shadow-glow)] mb-4">
-            <span className="text-3xl font-bold text-primary">evo</span>
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl mb-4">
+            <img src={evoLogo} alt="EVO Marketing & Tecnologia" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
             Calculadora de Performance
