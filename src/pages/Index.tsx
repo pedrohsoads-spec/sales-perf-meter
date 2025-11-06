@@ -1,4 +1,4 @@
-import { Calculator } from "@/components/Calculator";
+import { TeamCalculator } from "@/components/TeamCalculator";
 import { AuthDialog } from "@/components/AuthDialog";
 import { TrendingUp, DollarSign, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -80,7 +80,7 @@ const Index = () => {
 
       {/* Calculator Section */}
       <main className="container mx-auto px-4 pb-20">
-        <Calculator />
+        <TeamCalculator />
       </main>
 
       <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
