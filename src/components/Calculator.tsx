@@ -289,7 +289,7 @@ export const Calculator = () => {
                 id="salary"
                 type="text"
                 placeholder="R$ 0,00"
-                value={values.salary ? formatCurrencyInput(String(values.salary * 100)) : ""}
+                value={values.salary ? formatCurrencyInput(String(Math.round(values.salary * 100))) : ""}
                 onChange={(e) => handleCurrencyInputChange("salary", e.target.value)}
                 className="border-input"
               />
@@ -300,7 +300,7 @@ export const Calculator = () => {
                 id="otherCosts"
                 type="text"
                 placeholder="R$ 0,00"
-                value={values.otherCosts ? formatCurrencyInput(String(values.otherCosts * 100)) : ""}
+                value={values.otherCosts ? formatCurrencyInput(String(Math.round(values.otherCosts * 100))) : ""}
                 onChange={(e) => handleCurrencyInputChange("otherCosts", e.target.value)}
                 className="border-input"
               />
