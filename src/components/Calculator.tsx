@@ -135,12 +135,28 @@ export const Calculator = () => {
     setValues((prev) => ({ ...prev, [field]: numValue }));
   };
 
+  // Calcular totais
+  const totals = {
+    leads: results.leads * values.numberOfSellers,
+    salesCPF: results.salesCPF * values.numberOfSellers,
+    coursesSold: results.coursesSold * values.numberOfSellers,
+    revenue: results.revenue * values.numberOfSellers,
+    adInvestment: values.totalAdInvestment,
+    commission: results.commission * values.numberOfSellers,
+    operatingCost: results.operatingCost * values.numberOfSellers,
+    totalCost: results.totalCost * values.numberOfSellers,
+    grossProfit: results.grossProfit * values.numberOfSellers,
+    roas: values.totalAdInvestment > 0 ? (results.revenue * values.numberOfSellers / values.totalAdInvestment) * 100 : 0,
+    marketingCostPercent: (results.totalCost * values.numberOfSellers) > 0 ? (values.totalAdInvestment / (results.totalCost * values.numberOfSellers)) * 100 : 0,
+    salesCostPercent: (results.totalCost * values.numberOfSellers) > 0 ? (results.operatingCost * values.numberOfSellers / (results.totalCost * values.numberOfSellers)) * 100 : 0,
+  };
+
   return (
     <div className="space-y-8">
       {/* Projeção de Faturamento */}
       <Card className="shadow-[var(--shadow-card)] border-border">
         <CardHeader>
-          <CardTitle className="text-2xl text-primary">Projeção de Faturamento</CardTitle>
+          <CardTitle className="text-2xl text-primary">Projeção de Faturamento por Vendedor</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -252,7 +268,7 @@ export const Calculator = () => {
       {/* Custos */}
       <Card className="shadow-[var(--shadow-card)] border-border">
         <CardHeader>
-          <CardTitle className="text-2xl text-primary">Custos</CardTitle>
+          <CardTitle className="text-2xl text-primary">Custos por Vendedor</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -312,11 +328,11 @@ export const Calculator = () => {
         </CardContent>
       </Card>
 
-      {/* Resultado Final */}
+      {/* Resultado por Vendedor */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="shadow-[var(--shadow-card)] border-border bg-gradient-to-br from-success/5 to-success/10">
           <CardHeader>
-            <CardTitle className="text-lg text-muted-foreground">Lucro Bruto</CardTitle>
+            <CardTitle className="text-lg text-muted-foreground">Lucro Bruto por Vendedor</CardTitle>
           </CardHeader>
           <CardContent>
             <p className={`text-3xl font-bold ${results.grossProfit >= 0 ? 'text-success' : 'text-destructive'}`}>
@@ -343,6 +359,96 @@ export const Calculator = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Performance Total */}
+      {values.numberOfSellers > 0 && (
+        <div className="space-y-8 mt-12">
+          <h2 className="text-3xl font-bold text-primary text-center">Performance Total</h2>
+
+          <Card className="shadow-[var(--shadow-card)] border-border border-2">
+            <CardHeader>
+              <CardTitle className="text-2xl text-primary">Projeção Total de Faturamento</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="font-medium text-muted-foreground">Total de Leads Gerados</span>
+                <span className="text-lg font-semibold text-foreground">{formatNumber(totals.leads)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium text-muted-foreground">Total de Vendas CPF</span>
+                <span className="text-lg font-semibold text-foreground">{formatNumber(totals.salesCPF)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium text-muted-foreground">Total de Cursos Vendidos</span>
+                <span className="text-lg font-semibold text-foreground">{formatNumber(totals.coursesSold)}</span>
+              </div>
+              <div className="flex justify-between items-center pt-3 border-t border-border">
+                <span className="font-semibold text-foreground">Valor Total Faturado</span>
+                <span className="text-2xl font-bold text-primary">{formatCurrency(totals.revenue)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-semibold text-foreground">ROAS Médio</span>
+                <span className="text-2xl font-bold text-accent">{formatPercent(totals.roas)}</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-[var(--shadow-card)] border-border border-2">
+            <CardHeader>
+              <CardTitle className="text-2xl text-primary">Custos Totais</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="font-medium text-muted-foreground">Total de Investimento em Anúncios</span>
+                <span className="text-lg font-semibold text-foreground">{formatCurrency(totals.adInvestment)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium text-muted-foreground">Total de Comissões</span>
+                <span className="text-lg font-semibold text-foreground">{formatCurrency(totals.commission)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium text-muted-foreground">Custo Operacional Total</span>
+                <span className="text-lg font-semibold text-foreground">{formatCurrency(totals.operatingCost)}</span>
+              </div>
+              <div className="flex justify-between items-center pt-3 border-t border-border">
+                <span className="font-semibold text-foreground">Custo Total Geral</span>
+                <span className="text-2xl font-bold text-destructive">{formatCurrency(totals.totalCost)}</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="shadow-[var(--shadow-card)] border-border border-2 bg-gradient-to-br from-success/5 to-success/10">
+              <CardHeader>
+                <CardTitle className="text-lg text-muted-foreground">Lucro Bruto Total</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className={`text-3xl font-bold ${totals.grossProfit >= 0 ? 'text-success' : 'text-destructive'}`}>
+                  {formatCurrency(totals.grossProfit)}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-[var(--shadow-card)] border-border border-2">
+              <CardHeader>
+                <CardTitle className="text-lg text-muted-foreground">Custo Marketing Total</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold text-primary">{formatPercent(totals.marketingCostPercent)}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-[var(--shadow-card)] border-border border-2">
+              <CardHeader>
+                <CardTitle className="text-lg text-muted-foreground">Custo Vendas Total</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold text-primary">{formatPercent(totals.salesCostPercent)}</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
